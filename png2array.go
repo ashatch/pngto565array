@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	if (len(os.Args) < 2) {
+	if len(os.Args) < 2 {
 		fmt.Printf("Please supply a PNG file as an argument\n\n")
 		os.Exit(1)
 	}
@@ -26,18 +26,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	var size = (img.Bounds().Max.X) * (img.Bounds().Max.Y-1);
+	var size = (img.Bounds().Max.X) * (img.Bounds().Max.Y)
 	fmt.Printf("# converted PNG as RGB 5/6/5 color format array for use in Adafruit::GFX drawRGBBitmap\n")
-	fmt.Printf("const unsigned short bitmap[%d] PROGMEM={", size)
+	fmt.Printf("const unsigned short bitmap[%d] PROGMEM={\n", size)
 	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 		fmt.Print("  ")
 		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-			c := img.At(x, y)
 
+			c := img.At(x, y)
 			r, g, b, _ := c.RGBA()
+
 			r5 := ((r >> 3) & 0x1f) << 11
 			g6 := ((g >> 2) & 0x3f) << 5
 			b5 := (b >> 3) & 0x1f
+
 			rgb565 := r5 | g6 | b5
 
 			fmt.Printf("0x%04x", rgb565)
@@ -45,7 +47,7 @@ func main() {
 				fmt.Printf(", ")
 			}
 		}
-		fmt.Print("\n")
+		fmt.Printf("\n")
 	}
 	fmt.Printf("};\n")
 }
